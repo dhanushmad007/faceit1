@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacts App</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>FaceIT</h1>
+        <div class="buttons">
+            <a href="{% url 'upload_contacts' %}" class="btn upload-btn">Upload Contacts</a>
+            <a href="{% url 'view_contacts' %}" class="btn view-btn">View Contacts</a>
+            {% block content %}{% endblock %}
+            <div class="video-container">
+        <video autoplay loop muted controls="false"class="styled-video">
+            <source src="{% static 'videos/logo.mp4' %}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+        </div>
+         
+    </div>
+</body>
+</html>

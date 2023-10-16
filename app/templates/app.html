@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Video</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        #video-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-radius: 10px;
+            
+            margin: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        #videos {
+            display: flex;
+            flex-direction: column; /* Stack videos vertically */
+            align-items: center;
+        }
+
+        video {
+            width: 100%;
+            max-width: 80%; /* Adjust the max-width as needed */
+            border: 2px solid #333;
+            margin-bottom: 0px;
+             border-bottom: 0px;
+        }
+
+        #selected-video {
+            margin-bottom: 0px; /* Add spacing between selected video and camera feed */
+        }
+
+        #camera-feed {
+
+            width: 500px;
+            height: 340px;
+            border: 2px solid #333;
+            border-top: 0px;
+        }
+    </style>
+</head>
+<body>
+    <div id="video-container">
+        <h2>Name: {{ selected_contact.name }}</h2>
+        <div id="videos">
+            <video id="selected-video" loop muted>
+                <source src="{{ selected_contact.video.url }}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <video id="camera-feed" autoplay loop muted></video>
+        </div>
+    </div>
+<button id="start-audio-analysis">Start Audio Analysis</button>
+    <script>
+// Initialize variables
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+const analyser = audioContext.createAnalyser();
+const bufferLength = analyser.frequencyBinCount;
+const dataArray = new Uint8Array(bufferLength);
+
+// Get references to the video and audio elements
+const selectedVideo = document.getElementById('selected-video');
+const cameraFeed = document.getElementById('camera-feed');
+const audioButton = document.getElementById('start-audio-analysis');
+
+let isAudioPlaying = false;
+
+// Set a threshold for audio detection
+const audioThreshold = 1000; // Adjust this threshold as needed
+
+// Function to check if audio is playing through the speakers
+function checkAudio() {
+    navigator.mediaDevices
+        .getUserMedia({ audio: true })
+        .then(function (stream) {
+            const source = audioContext.createMediaStreamSource(stream);
+            source.connect(analyser);
+
+            // Start analyzing audio data
+            analyser.fftSize = 256;
+            analyser.smoothingTimeConstant = 0.8;
+
+
+            function check() {
+                analyser.getByteFrequencyData(dataArray);
+                console.log()
+                const sum = dataArray.reduce((a, b) => a + b, 0);
+                console.log(sum);
+                const audioPlaying = sum < 10; // Check if sum is greater than the threshold
+
+                if (audioPlaying !== isAudioPlaying) {
+                    isAudioPlaying = audioPlaying;
+
+                    if (isAudioPlaying) {
+                        selectedVideo.play();
+                    } else {
+                        selectedVideo.pause();
+                    }
+                }
+
+                requestAnimationFrame(check);
+            }
+
+            check();
+        })
+        .catch(function (err) {
+            console.error('Error accessing audio:', err);
+        });
+}
+
+// Add event listener to start audio analysis
+audioButton.addEventListener('click', function () {
+    checkAudio();
+});
+
+// Function to start camera feed
+async function startCamera() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        cameraFeed.srcObject = stream;
+    } catch (error) {
+        console.error('Error accessing camera:', error);
+    }
+}
+
+// Call the function to start the camera feed
+startCamera();
+
+    </script>
+</body>
+</html>

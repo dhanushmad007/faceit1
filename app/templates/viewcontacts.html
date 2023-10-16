@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style type="text/css">
+    	/* Apply basic styles to the table */
+/* Apply basic styles to the table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: Arial, sans-serif; /* Use a readable font */
+}
+
+/* Style table header */
+th {
+    background-color: #3498db;
+    color: white;
+    text-align: left;
+    padding: 12px; /* Increase padding for header cells */
+    border: 1px solid #ddd; /* Add border to header cells */
+}
+
+/* Style table rows */
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tr:nth-child(odd) {
+    background-color: #e0e0e0;
+}
+
+/* Style table cells */
+td {
+    border: 1px solid #ddd;
+    padding: 10px; /* Increase padding for data cells */
+}
+
+/* Style the "Update Status" button */
+button[type="submit"] {
+    background-color: #27ae60;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-weight: bold; /* Apply bold font to the button */
+}
+
+button[type="submit"]:hover {
+    background-color: #1e8449;
+}
+
+    </style>
+</head>
+<body>
+    <h1>Contacts</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Video</th>
+                <th>Action</th>
+               
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in data %}
+                <tr>
+                    <td>{{ item.name }}</td>
+      <td>
+                <video width="120" height="140" autoplay loop muted controls="false">
+                    <source src="{{ item.video.url }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </td>
+                    <td><center><a href="{% url 'view_video' item.id %}">View</a></center></td>
+
+        </tr>
+
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
